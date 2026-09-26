@@ -58,7 +58,12 @@ def descrever_metodologia_modelagem() -> dict[str, Any]:
             "Transporte",
             "Bolsa Família",
         ],
-        "status_etapa": "Etapa 3 implementada com pipeline operacional e cacheável.",
+        "configuracao_modelo": {
+            "random_state": configuracao.random_state,
+            "n_init": configuracao.n_init,
+            "max_iter": configuracao.max_iter,
+            "tolerancia": configuracao.tolerancia,
+        },
     }
 
 

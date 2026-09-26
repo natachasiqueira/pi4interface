@@ -23,7 +23,7 @@ PALETA_PERFIS = {
 PALETA_CATEGORIAS = ["#4C78A8", "#72B7B2", "#F4A261", "#E76F51"]
 
 
-def descrever_paineis_planejados() -> list[str]:
+def listar_recursos_dashboard() -> list[str]:
     return [
         "Filtros globais por Ano Letivo, Base de dados e Etapa na sidebar.",
         "Indicadores executivos com foco em desempenho, assiduidade e segmentação.",

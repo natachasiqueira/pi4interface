@@ -34,8 +34,8 @@ from visualizations import (
     criar_mapa_calor_correlacao,
     criar_tabela_acao_visual,
     criar_tabela_resumo_categoria,
-    descrever_paineis_planejados,
     gerar_mensagem_impacto,
+    listar_recursos_dashboard,
 )
 
 
@@ -67,8 +67,6 @@ def renderizar_sidebar(
     opcoes: dict[str, list[int] | list[str]],
 ) -> tuple[list[str], list[int], list[int]]:
     st.sidebar.title("Filtros Globais")
-    st.sidebar.success("Etapa 5 concluída")
-    st.sidebar.caption("Experiência final integrada no Streamlit")
 
     bases = listar_bases_disponiveis()
     st.sidebar.markdown("**Bases localizadas**")
@@ -91,9 +89,6 @@ def renderizar_sidebar(
         default=opcoes["etapas"],
         format_func=lambda valor: f"{valor}º ano",
     )
-
-    st.sidebar.markdown("**Próxima etapa**")
-    st.sidebar.write("6. Empacotamento e deploy")
     return arquivos_origem, anos_letivos, etapas
 
 
@@ -184,7 +179,7 @@ def renderizar_cabecalho(
 ) -> None:
     st.title("Dashboard Educacional")
     st.caption(
-        "Etapa 5: experiência integrada no Streamlit, com navegação orientada à decisão pedagógica."
+        "Análise de desempenho, assiduidade e perfis de aprendizagem para apoio à tomada de decisão pedagógica."
     )
 
     indicadores = gerar_indicadores_executivos(base_filtrada, resultado_modelagem)
@@ -239,6 +234,7 @@ def renderizar_painel_executivo(
     st.plotly_chart(
         criar_grafico_dispersao_clusters(resultado_modelagem["base_clusterizada"]),
         use_container_width=True,
+        key="grafico_dispersao_painel_executivo",
     )
 
 
@@ -253,6 +249,7 @@ def renderizar_impactos_socioeconomicos(base_filtrada: pd.DataFrame) -> None:
         st.plotly_chart(
             criar_grafico_impacto_categoria(base_filtrada, "transporte_descricao"),
             use_container_width=True,
+            key="grafico_impacto_transporte",
         )
         st.info(gerar_mensagem_impacto(base_filtrada, "transporte_descricao"))
         st.dataframe(
@@ -265,6 +262,7 @@ def renderizar_impactos_socioeconomicos(base_filtrada: pd.DataFrame) -> None:
         st.plotly_chart(
             criar_grafico_impacto_categoria(base_filtrada, "bolsa_familia_descricao"),
             use_container_width=True,
+            key="grafico_impacto_bolsa_familia",
         )
         st.info(gerar_mensagem_impacto(base_filtrada, "bolsa_familia_descricao"))
         st.dataframe(
@@ -299,6 +297,7 @@ def renderizar_diagnostico(
         st.plotly_chart(
             criar_grafico_metricas_validacao(resultado_modelagem["tabela_metricas"]),
             use_container_width=True,
+            key="grafico_metricas_validacao",
         )
 
     with col2:
@@ -306,6 +305,7 @@ def renderizar_diagnostico(
         st.plotly_chart(
             criar_grafico_cotovelo(resultado_modelagem["curva_cotovelo"]),
             use_container_width=True,
+            key="grafico_cotovelo",
         )
 
     with st.expander("Ver tabelas numéricas da validação"):
@@ -344,6 +344,7 @@ def renderizar_perfis(
     st.plotly_chart(
         criar_grafico_dispersao_clusters(resultado_modelagem["base_clusterizada"]),
         use_container_width=True,
+        key="grafico_dispersao_perfis",
     )
 
     st.markdown("**Resumo consolidado dos perfis**")
@@ -476,11 +477,11 @@ def renderizar_dados_metodo(
         for item in descrever_estrategia_concatenacao():
             st.write(f"- {item}")
 
-        st.markdown("**Metodologia de modelagem aprovada**")
+        st.markdown("**Metodologia de modelagem**")
         st.json(descrever_metodologia_modelagem())
 
         if resultado_modelagem is not None:
-            st.markdown("**Status do conjunto analítico**")
+            st.markdown("**Resumo do conjunto analítico**")
             st.write(
                 {
                     "Colunas de modelagem detectadas": obter_colunas_modelagem(base_filtrada),
@@ -490,9 +491,9 @@ def renderizar_dados_metodo(
                 }
             )
 
-        with st.expander("Painéis previstos para o dashboard"):
-            for painel in descrever_paineis_planejados():
-                st.write(f"- {painel}")
+        with st.expander("Recursos disponíveis no dashboard"):
+            for recurso in listar_recursos_dashboard():
+                st.write(f"- {recurso}")
 
 
 def renderizar_tabs_principais(
