@@ -282,9 +282,10 @@ def renderizar_diagnostico(
     )
 
     st.markdown("**Mapa de calor de correlação**")
-    st.pyplot(
+    st.plotly_chart(
         criar_mapa_calor_correlacao(base_filtrada, obter_colunas_modelagem(base_filtrada)),
-        clear_figure=True,
+        use_container_width=True,
+        key="grafico_mapa_correlacao",
     )
 
     if resultado_modelagem is None:

@@ -3,14 +3,7 @@ from __future__ import annotations
 from io import BytesIO
 from typing import Any
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import seaborn as sns
-from matplotlib.figure import Figure
-from plotly.subplots import make_subplots
-
 
 PALETA_PERFIS = {
     "Avançado": "#2A9D8F",
@@ -57,7 +50,10 @@ def _gerar_base_resumo_categoria(df: pd.DataFrame, coluna_categoria: str) -> pd.
     return resumo
 
 
-def criar_grafico_impacto_categoria(df: pd.DataFrame, coluna_categoria: str) -> go.Figure:
+def criar_grafico_impacto_categoria(df: pd.DataFrame, coluna_categoria: str) -> Any:
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
     resumo = _gerar_base_resumo_categoria(df, coluna_categoria)
     titulo = _titulo_categoria(coluna_categoria)
 
@@ -124,37 +120,48 @@ def criar_tabela_resumo_categoria(df: pd.DataFrame, coluna_categoria: str) -> pd
     )
 
 
-def criar_mapa_calor_correlacao(df: pd.DataFrame, colunas_modelagem: list[str]) -> Figure:
-    colunas_correlação = [
+def criar_mapa_calor_correlacao(df: pd.DataFrame, colunas_modelagem: list[str]) -> Any:
+    import plotly.graph_objects as go
+
+    colunas_correlacao = [
         coluna
         for coluna in colunas_modelagem
         if coluna in df.columns and df[coluna].notna().any()
     ]
-    matriz = df[colunas_correlação].corr(numeric_only=True)
+    matriz = df[colunas_correlacao].corr(numeric_only=True).round(2)
 
-    figura, eixo = plt.subplots(figsize=(14, 10))
-    mascara = matriz.where(~pd.isna(matriz)).isna()
-    sns.heatmap(
-        matriz,
-        mask=mascara,
-        annot=True,
-        fmt=".2f",
-        cmap="vlag",
-        center=0,
-        vmin=-1,
-        vmax=1,
-        linewidths=0.5,
-        cbar_kws={"shrink": 0.8},
-        ax=eixo,
+    figura = go.Figure(
+        data=go.Heatmap(
+            z=matriz.values,
+            x=matriz.columns.tolist(),
+            y=matriz.index.tolist(),
+            colorscale="RdBu",
+            zmid=0,
+            zmin=-1,
+            zmax=1,
+            text=matriz.values,
+            texttemplate="%{text:.2f}",
+            hovertemplate=(
+                "Variável X: %{x}<br>"
+                "Variável Y: %{y}<br>"
+                "Correlação: %{z:.2f}<extra></extra>"
+            ),
+            colorbar=dict(title="Correlação"),
+        )
     )
-    eixo.set_title("Mapa de Calor de Correlação", fontsize=14, pad=12)
-    eixo.tick_params(axis="x", rotation=45)
-    eixo.tick_params(axis="y", rotation=0)
-    figura.tight_layout()
+    figura.update_layout(
+        title="Mapa de Calor de Correlação",
+        template="plotly_white",
+        height=720,
+        margin=dict(l=20, r=20, t=60, b=20),
+    )
+    figura.update_xaxes(tickangle=45)
     return figura
 
 
-def criar_grafico_dispersao_clusters(base_clusterizada: pd.DataFrame) -> go.Figure:
+def criar_grafico_dispersao_clusters(base_clusterizada: pd.DataFrame) -> Any:
+    import plotly.express as px
+
     categorias_ordenadas = [
         categoria
         for categoria in ["Avançado", "Regular", "Regular 1", "Regular 2", "Necessita de Reforço"]
@@ -193,7 +200,9 @@ def criar_grafico_dispersao_clusters(base_clusterizada: pd.DataFrame) -> go.Figu
     return fig
 
 
-def criar_grafico_cotovelo(curva_cotovelo: pd.DataFrame) -> go.Figure:
+def criar_grafico_cotovelo(curva_cotovelo: pd.DataFrame) -> Any:
+    import plotly.express as px
+
     fig = px.line(
         curva_cotovelo,
         x="k",
@@ -207,7 +216,10 @@ def criar_grafico_cotovelo(curva_cotovelo: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def criar_grafico_metricas_validacao(tabela_metricas: pd.DataFrame) -> go.Figure:
+def criar_grafico_metricas_validacao(tabela_metricas: pd.DataFrame) -> Any:
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
     fig = make_subplots(
         rows=1,
         cols=3,
