@@ -35,7 +35,6 @@ from visualizations import (
     criar_tabela_acao_visual,
     criar_tabela_resumo_categoria,
     gerar_mensagem_impacto,
-    listar_recursos_dashboard,
 )
 
 
@@ -44,6 +43,16 @@ st.set_page_config(
     page_icon="📚",
     layout="wide",
 )
+
+
+RECURSOS_DASHBOARD = [
+    "Filtros globais por Ano Letivo, Base de dados e Etapa na barra lateral.",
+    "Indicadores executivos com foco em desempenho, assiduidade e segmentação.",
+    "Gráficos de impacto socioeconômico e logístico para Transporte e Bolsa Família.",
+    "Mapa de calor de correlação entre notas, faltas e fatores sociais.",
+    "Dispersão interativa de Média Global por Faltas Médias com identificação do aluno.",
+    "Tabela de ação para alunos avançados e alunos com necessidade de reforço.",
+]
 
 
 def carregar_contexto_dados() -> tuple[pd.DataFrame, dict[str, list[int] | list[str]]]:
@@ -493,7 +502,7 @@ def renderizar_dados_metodo(
             )
 
         with st.expander("Recursos disponíveis no dashboard"):
-            for recurso in listar_recursos_dashboard():
+            for recurso in RECURSOS_DASHBOARD:
                 st.write(f"- {recurso}")
 
 
